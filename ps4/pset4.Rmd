@@ -1,0 +1,521 @@
+---
+title: "STATS 206 Pset 4"
+author: "Léon Marbach"
+date: "2023-11-16"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("/Users/lmarbach/Library/CloudStorage/GoogleDrive-lmarbach@stanford.edu/My Drive/Coursework/Year 2/Fall 2023/STATS 206/pset4")
+```
+
+```{r}
+set.seed(20231107)
+```
+
+# Problem 1
+
+## (a)
+
+```{r}
+makevals = function( N = 2500, n = 10, d = 2, seed = 20231107 ){
+set.seed(seed)
+usa = matrix( rnorm(N*d),nrow=N )
+hi = matrix( rnorm(n*d),nrow=n )*.2
+hi[,1] = hi[,1]-6
+hi[,2] = hi[,2]-3
+all = rbind(usa,hi)
+all = round(all,2)
+gp = c(rep(1,N),rep(2,n))
+colnames(all)=c("long","lat")
+plot( all[,1],all[,2],xlab="Longitude",ylab="Lattitude",
+main="Data for k means", col=gp, pch=16, asp=1)
+all
+}
+
+data <- makevals()
+
+kmeans_a <- kmeans(data, centers = 2)
+
+points(
+  data[, 1], data[, 2], 
+  col = ifelse(kmeans_a$cluster == 1, "green", "yellow"),
+  pch = 16, 
+  cex = 1
+)
+
+points(
+  kmeans_a$centers[, 1], kmeans_a$centers[, 2],
+  col = "black", 
+  pch = 3, 
+  cex = 3
+)
+
+legend(
+  "topright", 
+  legend = c("Cluster 1", "Cluster 2", "Cluster centers"), 
+  col = c("green", "yellow", "black"),
+  pch = c(16, 16, 3), 
+  cex = 0.8
+)
+```
+
+It does not find Hawaii.
+
+## (b)
+
+```{r}
+makevals = function( N = 2500, n = 10, d = 2, seed = 20231107 ){
+set.seed(seed)
+usa = matrix( rnorm(N*d),nrow=N )
+hi = matrix( rnorm(n*d),nrow=n )*.2
+hi[,1] = hi[,1]-6
+hi[,2] = hi[,2]-3
+all = rbind(usa,hi)
+all = round(all,2)
+gp = c(rep(1,N),rep(2,n))
+colnames(all)=c("long","lat")
+plot( all[,1],all[,2],xlab="Longitude",ylab="Lattitude",
+main="Data for k means", col=gp, pch=16, asp=1)
+all
+}
+
+data <- makevals()
+
+kmeans_b_1 <- kmeans(data, centers = 2)
+kmeans_b_1$centers
+kmeans_b_1$iter
+
+kmeans_b_2 <- kmeans(data, centers = 2)
+kmeans_b_2$centers
+kmeans_b_2$iter
+
+kmeans_b_3 <- kmeans(data, centers = 2)
+kmeans_b_3$centers
+kmeans_b_3$iter
+
+kmeans_b_4 <- kmeans(data, centers = 2)
+kmeans_b_4$centers
+kmeans_b_4$iter
+
+kmeans_b_5 <- kmeans(data, centers = 2)
+kmeans_b_5$centers
+kmeans_b_5$iter
+
+kmeans_b_6 <- kmeans(data, centers = 2)
+kmeans_b_6$centers
+kmeans_b_6$iter
+
+kmeans_b_7 <- kmeans(data, centers = 2)
+kmeans_b_7$centers
+kmeans_b_7$iter
+
+kmeans_b_8 <- kmeans(data, centers = 2)
+kmeans_b_8$centers
+kmeans_b_8$iter
+
+kmeans_b_9 <- kmeans(data, centers = 2)
+kmeans_b_9$centers
+kmeans_b_9$iter
+
+kmeans_b_10 <- kmeans(data, centers = 2)
+kmeans_b_10$centers
+kmeans_b_10$iter
+```
+
+When repeating the process 10 times, we observe that the number of iterations kmeans use is always 1. As for the cluster centers, we observe that either the cluster centers will be $(0.7060717,  0.05617625)$ and $(-0.9302135, -0.09851409)$, or $(0.7049142,  0.05538404)$ and $(-0.9316852, -0.09786997)$, which is very close.
+
+## (c)
+
+```{r}
+makevals = function( N = 2500, n = 10, d = 2, seed = 20231107 ){
+set.seed(seed)
+usa = matrix( rnorm(N*d),nrow=N )
+hi = matrix( rnorm(n*d),nrow=n )*.2
+hi[,1] = hi[,1]-6
+hi[,2] = hi[,2]-3
+all = rbind(usa,hi)
+all = round(all,2)
+gp = c(rep(1,N),rep(2,n))
+colnames(all)=c("long","lat")
+plot( all[,1],all[,2],xlab="Longitude",ylab="Lattitude",
+main="Data for k means", col=gp, pch=16, asp=1)
+all
+}
+
+data <- makevals()
+
+kmeans_c <- kmeans(data, centers = 3)
+
+cluster_colors <- c("yellow", "green", "cyan")
+
+points(
+  data[, 1], data[, 2], 
+  col = cluster_colors[kmeans_c$cluster],
+  pch = 16, 
+  cex = 1
+)
+
+points(
+  kmeans_c$centers[, 1], kmeans_c$centers[, 2],
+  col = "black", 
+  pch = 3, 
+  cex = 3
+)
+
+legend(
+  "topright", 
+  legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster centers"), 
+  col = c("yellow", "green", "cyan", "black"),
+  pch = c(16, 16, 16, 3), 
+  cex = 0.8
+)
+
+kmeans_c_1 <- kmeans(data, centers = 3)
+kmeans_c_1$centers
+kmeans_c_1$iter
+
+kmeans_c_2 <- kmeans(data, centers = 3)
+kmeans_c_2$centers
+kmeans_c_2$iter
+
+kmeans_c_3 <- kmeans(data, centers = 3)
+kmeans_c_3$centers
+kmeans_c_3$iter
+
+kmeans_c_4 <- kmeans(data, centers = 3)
+kmeans_c_4$centers
+kmeans_c_4$iter
+
+kmeans_c_5 <- kmeans(data, centers = 3)
+kmeans_c_5$centers
+kmeans_c_5$iter
+
+kmeans_c_6 <- kmeans(data, centers = 3)
+kmeans_c_6$centers
+kmeans_c_6$iter
+
+kmeans_c_7 <- kmeans(data, centers = 3)
+kmeans_c_7$centers
+kmeans_c_7$iter
+
+kmeans_c_8 <- kmeans(data, centers = 3)
+kmeans_c_8$centers
+kmeans_c_8$iter
+
+kmeans_c_9 <- kmeans(data, centers = 3)
+kmeans_c_9$centers
+kmeans_c_9$iter
+
+kmeans_c_10 <- kmeans(data, centers = 3)
+kmeans_c_10$centers
+kmeans_c_10$iter
+```
+
+Again, it does not find Hawaii.
+
+When repeating the process 10 times, we observe that the number of iterations kmeans use is between 2 and 4. As for the cluster centers, they vary greatly and are systematically different.
+
+## (d)
+
+```{r}
+makevals = function( N = 2500, n = 10, d = 2, seed = 20231107 ){
+set.seed(seed)
+usa = matrix( rnorm(N*d),nrow=N )
+hi = matrix( rnorm(n*d),nrow=n )*.2
+hi[,1] = hi[,1]-6
+hi[,2] = hi[,2]-3
+all = rbind(usa,hi)
+all = round(all,2)
+gp = c(rep(1,N),rep(2,n))
+colnames(all)=c("long","lat")
+plot( all[,1],all[,2],xlab="Longitude",ylab="Lattitude",
+main="Data for k means", col=gp, pch=16, asp=1)
+all
+}
+
+data <- makevals()
+
+kmeans_d <- kmeans(data, centers = 7)
+
+cluster_colors <- c(1:7)
+
+points(
+  data[, 1], data[, 2], 
+  col = cluster_colors[kmeans_d$cluster],
+  pch = 16, 
+  cex = 1
+)
+
+points(
+  kmeans_d$centers[, 1], kmeans_d$centers[, 2],
+  col = "white",
+  pch = 3,
+  cex = 2
+)
+
+legend(
+  "topright", 
+  legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5",
+             "Cluster 6", "Cluster 7", "Cluster centers"), 
+  col = c(1:7, "black"),
+  pch = c(16, 16, 16, 16, 16, 16, 16, 3), 
+  cex = 0.8
+)
+```
+
+The first time we get exactly one cluster in Hawaii is at $k=7$.
+
+## (e)
+
+```{r}
+library(deldir)
+cluster_centers <- kmeans_d$centers
+cluster_centers_df <- data.frame(xloc = cluster_centers[, 1], yloc = cluster_centers[, 2])
+tesselation <- deldir(cluster_centers_df$xloc, cluster_centers_df$yloc)
+tiles <- tile.list(tesselation)
+plot(tiles, pch=19)
+```
+
+# Problem 2
+
+# Problem 3
+
+```{r}
+# import dataset
+pop <- read.table("post-operative.data", header = F, sep = ",")
+
+# rename variables
+names(pop) <- c("int_temp", "surf_temp", "oxygen", "bp", "stab_surf_temp", 
+                "stab_core_temp", "stab_bp", "comfort", "decision")
+
+# handle NAs in comfort level
+pop$comfort[pop$comfort == "?"] <- NA
+
+# convert to factors
+pop$int_temp <- factor(pop$int_temp, ordered = TRUE, levels = c("low", "mid", "high"))
+pop$surf_temp <- factor(pop$surf_temp, ordered = TRUE, levels = c("low", "mid", "high"))
+pop$oxygen <- factor(pop$oxygen, ordered = TRUE, levels = c("good", "excellent"))
+pop$bp <- factor(pop$bp, ordered = TRUE, levels = c("low", "mid", "high"))
+pop$stab_surf_temp <- factor(pop$stab_surf_temp, ordered = TRUE, 
+                             levels = c("unstable", "stable"))
+pop$stab_core_temp <- factor(pop$stab_core_temp, ordered = TRUE, 
+                             levels = c("unstable", "mod-stable", "stable"))
+pop$comfort <- as.numeric(pop$comfort)
+pop$decision <- factor(pop$decision, ordered = FALSE, levels = c("I", "S", "A"))
+```
+
+3 observations have a missing value for the $comfort$ variable. Since one observation is an intensive care decision and we only have 2 intensive care decisions in our dataset, we decide not to remove this observation and the 2 others but to replace the three missing values with the mean of $comfort$ variable rounded to the nearest integer.
+
+```{r}
+# replace NAs with comfort mean
+mean_comfort <- round(mean(pop$comfort, na.rm = TRUE))
+pop$comfort[is.na(pop$comfort)] <- mean_comfort
+
+# Load necessary packages
+library(randomForest)
+library(rpart)
+library(caret)
+
+# Train Decision Tree classifier on the full dataset
+full_model_tree <- rpart(decision ~ ., data = pop, method = "class")
+
+# Predict on the full dataset using Decision Tree
+predictions_full_tree <- predict(full_model_tree, newdata = pop, type = "class")
+conf_matrix_full_tree <- confusionMatrix(predictions_full_tree, pop$decision)
+
+# Print Confusion Matrix for Decision Tree on Full Dataset
+print(conf_matrix_full_tree)
+
+# Train Random Forest classifier on the full dataset
+full_model_rf <- randomForest(decision ~ ., data = pop, ntree = 500)
+
+# Predict on the full dataset using Random Forest
+predictions_full_rf <- predict(full_model_rf, newdata = pop, type = "response")
+conf_matrix_full_rf <- confusionMatrix(predictions_full_rf, pop$decision)
+
+# Print Confusion Matrix for Random Forest on Full Dataset
+print(conf_matrix_full_rf)
+
+# Perform 5-fold CV for Decision Tree
+ctrl <- trainControl(method = "cv", number = 5)
+cv_model_tree <- train(decision ~ ., data = pop, method = "rpart", trControl = ctrl)
+
+# Print the results of cross-validation for Decision Tree
+print(cv_model_tree$results)
+
+# Perform 5-fold CV for Random Forest
+ctrl <- trainControl(method = "cv", number = 5)
+cv_model_rf <- train(decision ~ ., data = pop, method = "rf", trControl = ctrl)
+
+# Print the results of cross-validation for Random Forest
+print(cv_model_rf$results)
+```
+
+# Problem 4
+
+## (a)
+
+```{r}
+# read data file
+food <- read.table("food.txt", header = TRUE, row = 1)
+
+# abbreviate variables
+names(food) <- c("Fat", "Cal", "Carbs", "Protein", "Chol", "Weight", "SatFat")
+
+# keep variable 6 for later
+food_weight <- food$Weight
+food <- food[, -which(names(food) == "Weight")]
+
+# convert to matrix
+food <- as.matrix(food)
+
+# Scale the data
+scaled_food <- scale(food)
+
+# Hierarchical clustering with single linkage
+hclust_single <- hclust(dist(scaled_food), method = "single")
+
+# Hierarchical clustering with average linkage
+hclust_average <- hclust(dist(scaled_food), method = "average")
+
+# Hierarchical clustering with complete linkage
+hclust_complete <- hclust(dist(scaled_food), method = "complete")
+
+# plot dendrograms
+par(mfrow = c(1, 3))
+plot(hclust_single, main = "Single Linkage", xlab = "", ylab = "", labels = F)
+plot(hclust_average, main = "Average Linkage", xlab = "", ylab = "", labels = F)
+plot(hclust_complete, main = "Complete Linkage", xlab = "", ylab = "", labels = F)
+```
+
+## (b)
+
+```{r}
+# Cut the dendrograms to create clusters for each linkage method
+cut_single <- cutree(hclust_single, k = 10)
+cut_average <- cutree(hclust_average, k = 10)
+cut_complete <- cutree(hclust_complete, k = 10)
+
+# Create tables with the counts for each cluster
+table_single <- table(cut_single)
+table_average <- table(cut_average)
+table_complete <- table(cut_complete)
+
+# Combine the tables into a single data frame
+cluster_table <- data.frame(
+  Cluster = 1:10,
+  Single = table_single,
+  Average = table_average,
+  Complete = table_complete
+)
+
+# Reshape the data frame to have methods in rows and clusters in columns
+cluster_table_reshaped <- as.data.frame(t(cluster_table[, -1]))
+
+# Print only the frequency rows
+print(cluster_table_reshaped[grepl(".Freq", rownames(cluster_table_reshaped)), ])
+```
+
+## (c)
+
+The clustering most affected by this is the single linkage clustering. The cluster least affected by this is the complete linkage clustering.
+
+```{r}
+# Set the desired number of foods for filtering
+min_foods = 2
+max_foods = 50
+
+# Choose the complete linkage clustering result
+clustering_result <- cutree(hclust_complete, k = 10)
+
+# Find clusters with more than one food and fewer than 50 foods
+selected_clusters <- which(table(clustering_result) > min_foods & table(clustering_result) < max_foods)
+
+# List the foods in the selected clusters line by line
+for (cluster_id in selected_clusters) {
+  foods_in_cluster <- names(which(clustering_result == cluster_id))
+  
+  # Print cluster header
+  cat("Cluster", cluster_id, ":\n")
+  
+  # Print each food on a new line
+  for (food in foods_in_cluster) {
+    cat("  - ", food, "\n")
+  }
+  cat("\n")
+}
+```
+
+I pick clusters 6 and . Cluster 6 clearly brings together all oils. 
+
+## (d)
+
+```{r}
+# read data file
+food <- read.table("food.txt", header = TRUE, row = 1)
+
+# abbreviate variables
+names(food) <- c("Fat", "Cal", "Carbs", "Protein", "Chol", "Weight", "SatFat")
+
+# keep variable 6 for later
+food_weight <- food$Weight
+food <- food[, -which(names(food) == "Weight")]
+
+# convert to matrix
+food <- as.matrix(food)
+
+# divide by weight
+food <- food / food_weight
+
+# Scale the data
+scaled_food <- scale(food)
+
+# Hierarchical clustering with single linkage
+hclust_single <- hclust(dist(scaled_food), method = "single")
+
+# Hierarchical clustering with average linkage
+hclust_average <- hclust(dist(scaled_food), method = "average")
+
+# Hierarchical clustering with complete linkage
+hclust_complete <- hclust(dist(scaled_food), method = "complete")
+
+# plot dendrograms
+par(mfrow = c(1, 3))
+plot(hclust_single, main = "Single Linkage", xlab = "", ylab = "", labels = F)
+plot(hclust_average, main = "Average Linkage", xlab = "", ylab = "", labels = F)
+plot(hclust_complete, main = "Complete Linkage", xlab = "", ylab = "", labels = F)
+
+# Cut the dendrograms to create clusters for each linkage method
+cut_single <- cutree(hclust_single, k = 10)
+cut_average <- cutree(hclust_average, k = 10)
+cut_complete <- cutree(hclust_complete, k = 10)
+
+# Create tables with the counts for each cluster
+table_single <- table(cut_single)
+table_average <- table(cut_average)
+table_complete <- table(cut_complete)
+
+# Combine the tables into a single data frame
+cluster_table <- data.frame(
+  Cluster = 1:10,
+  Single = table_single,
+  Average = table_average,
+  Complete = table_complete
+)
+
+# Reshape the data frame to have methods in rows and clusters in columns
+cluster_table_reshaped <- as.data.frame(t(cluster_table[, -1]))
+
+# Print only the frequency rows
+print(cluster_table_reshaped[grepl(".Freq", rownames(cluster_table_reshaped)), ])
+```
+
+Again, the most affected clustering is the single linkage clustering and the least affected is the complete linkage clustering.
+
+## (e)
+

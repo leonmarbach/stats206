@@ -1,0 +1,307 @@
+---
+title: "STATS 206 Pset 2"
+author: "Léon Marbach"
+date: "2023-10-17"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("/Users/lmarbach/Library/CloudStorage/GoogleDrive-lmarbach@stanford.edu/My Drive/Coursework/Year 2/Fall 2023/STATS 206/pset2")
+```
+
+# Problem 1
+
+## (a)
+
+```{r}
+# create matrices
+sigma_A <- matrix(c(2.929, 5.898, 5.386, 
+                    5.898, 19.032, 16.467, 
+                    5.386, 16.467, 16.038),
+                  nrow = 3, ncol = 3) 
+sigma_B <- matrix(c(30.077, -4.956, -7.673, 
+                    -4.956, 20.443, -15.085, 
+                    -7.673, -15.085, 19.480),
+                  nrow = 3, ncol = 3) 
+sigma_C <- matrix(c(2.384, 0.173, -0.164, 
+                    0.173, 2.091, -0.006, 
+                    -0.164, -0.006, 2.425),
+                  nrow = 3, ncol = 3) 
+
+# find eigenvalues and eigenvectors
+eigen(sigma_A)
+eigen(sigma_B)
+eigen(sigma_C)
+```
+
+We know that the eigenvalues we found for each multivariate normal distribution determine the lengths of semiaxes of the 3-dimensional ellipsoid (stretching along each direction). Hence, distribution A has the shape of a **needle** (one eigenvalue much larger than the other two that are approximately the same), distribution B has the shape of a **plate** (two eigenvalues much larger than the third one - note that the plate is not perfectly round because the two largest eigenvalues are not exactly the same), and distribution C has approximately the shape of a **ball** (three eigenvalues are around 2.3 - note that the ball is not perfectly round because eigenvalues are not exactly the same).
+
+## (b)
+
+The eigenvalues are always returned in decreasing order, and each column of vectors corresponds to the elements in values. Thus, the eigenvector that goes with the largest eigenvalue is the **first column vector**:
+
+* for distribution A, the eigenvector that goes with the largest eigenvalue 35.9990069 is (-0.2347735, -0.7177842, -0.6554901)
+* for distribution B, the eigenvector that goes with the largest eigenvalue 35.999962 is (-0.4652949, -0.5353195, 0.7049352)
+* for distribution C, the eigenvector that goes with the largest eigenvalue 2.600198 is (0.7032421, 0.2467829, -0.6667449)
+
+## (c)
+
+See Appendix for details on calculations.
+
+```{r}
+# distrib A: variance of X2 conditionally on X1 and X3
+sigma_A[2,2] - 
+  matrix(c(sigma_A[2,1], sigma_A[2,3]), nrow = 1, ncol = 2) %*% 
+  solve(matrix(c(sigma_A[1,1], sigma_A[3,1], sigma_A[1,3], sigma_A[3,3]), nrow = 2, ncol = 2)) %*%
+  matrix(c(sigma_A[2,1], sigma_A[2,3]), nrow = 2, ncol = 1)
+
+# distrib B: correlation of X2 and X3 conditionally on X1
+var_cov <- matrix(c(sigma_B[2,2], sigma_B[2,3], sigma_B[3,2], sigma_B[3,3]), nrow = 2, ncol = 2) -
+    (1 / sigma_B[1,1]) *
+    matrix(c(sigma_B[2,1], sigma_B[3,1]), nrow = 2, ncol = 1) %*%
+    matrix(c(sigma_B[2,1], sigma_B[3,1]), nrow = 1, ncol = 2)
+var_cov[1,2] / sqrt(var_cov[1,1] * var_cov[2,2])
+
+# distrib C: expectation of X3 conditionally on X1 = 1 and X2 = -1
+matrix(c(sigma_C[3,1], sigma_C[3,2]), nrow = 1, ncol = 2) %*%
+  solve(matrix(c(sigma_C[1,1], sigma_C[1,2], sigma_C[1,2], sigma_C[2,2]), nrow = 2, ncol = 2)) %*%
+  matrix(c(1, -1), nrow = 2, ncol = 1)
+```
+
+# Problem 2
+
+## (a)
+
+```{r}
+# import datasets
+male <- read.csv("ANSUR_II_MALE_Public.csv")
+female <- read.csv("ANSUR_II_FEMALE_Public.csv")
+
+# select out dimensions containing length
+male_length <- male[, grep("length", names(male))]
+female_length <- female[, grep("length", names(female))]
+
+# compute T2 statistic
+library(DescTools)
+HotellingsT2Test(male_length, female_length)
+```
+The $T^2$ statistic based on the F-distribution is 873.23.
+
+## (b)
+
+```{r}
+# divide all columns by height
+male_length_normalized <- male_length/male$Heightin
+female_length_normalized <- female_length/female$Heightin
+
+# compute T2 statistic
+HotellingsT2Test(male_length_normalized, female_length_normalized)
+```
+
+The $T^2$ statistic based on the F-distribution is 552.65.
+
+## (c)
+
+```{r}
+# select length variables in male dataset and separate by writing preference
+male_length_left <- subset(male[, grep("length", names(male))], 
+                           male$WritingPreference == "Left hand")
+male_length_right <- subset(male[, grep("length", names(male))], 
+                            male$WritingPreference == "Right hand")
+
+# compute T2 statistic
+HotellingsT2Test(male_length_left, male_length_right)
+```
+
+For men, the $T^2$ statistic based on the F-distribution is 2.5709 and the p-value is 0.0001071.
+
+```{r}
+# select length variables in female dataset and separate by writing preference
+female_length_left <- subset(female[, grep("length", names(female))], 
+                           female$WritingPreference == "Left hand")
+female_length_right <- subset(female[, grep("length", names(female))], 
+                              female$WritingPreference == "Right hand")
+
+# compute T2 statistic
+HotellingsT2Test(female_length_left, female_length_right)
+```
+
+For women, the $T^2$ statistic based on the F-distribution is 0.92602 and the p-value is 0.5567.
+
+## (d)
+
+```{r}
+# 1. male vs female
+
+# select out dimensions containing breadth
+male_breadth <- male[, grep("breadth", names(male))]
+female_breadth <- female[, grep("breadth", names(female))]
+
+# compute T2 statistic
+HotellingsT2Test(male_breadth, female_breadth)
+```
+
+The $T^2$ statistic based on the F-distribution is 1991.2.
+
+```{r}
+# 2. normalized male vs female
+
+# divide all columns by weight
+# remove id 13956 who has weight 0
+male_subset <- male[male$subjectid != 13956, ]
+male_breadth_subset <- male_subset[, grep("breadth", names(male))]
+male_breadth_normalized <- male_breadth_subset/male_subset$Weightlbs
+female_breadth_normalized <- female_breadth/female$Weightlbs
+
+# compute T2 statistic
+HotellingsT2Test(male_breadth_normalized, female_breadth_normalized)
+```
+
+The $T^2$ statistic based on the F-distribution is 2233.8.
+
+```{r}
+# 3a. left vs right-handed male
+
+# select breadth variables in male dataset and separate by writing preference
+male_breadth_left <- subset(male[, grep("breadth", names(male))], 
+                           male$WritingPreference == "Left hand")
+male_breadth_right <- subset(male[, grep("breadth", names(male))], 
+                             male$WritingPreference == "Right hand")
+
+# compute T2 statistic
+HotellingsT2Test(male_breadth_left, male_breadth_right)
+```
+
+For men, the $T^2$ statistic based on the F-distribution is 3.2229 and the p-value is 1.405e-05.
+
+```{r}
+# 3b. left vs right-handed female
+
+# select breadth variables in female dataset and separate by writing preference
+female_breadth_left <- subset(female[, grep("breadth", names(female))], 
+                           female$WritingPreference == "Left hand")
+female_breadth_right <- subset(female[, grep("breadth", names(female))], 
+                            female$WritingPreference == "Right hand")
+
+# compute T2 statistic
+HotellingsT2Test(female_breadth_left, female_breadth_right)
+```
+
+For women, the $T^2$ statistic based on the F-distribution is 1.0719 and the p-value is 0.3768.
+
+# Problem 3
+
+## (a)
+
+```{r}
+# import iris dataset
+data(iris)
+pairs(iris[,1:4],col=as.numeric(iris[,5]))
+
+# print variance-covariance matrix with 3 significant figures
+# setosa
+cov_setosa <- signif(cov(iris[iris$Species == "setosa", 1:4]), digits = 3)
+cov_setosa
+# versicolor
+cov_versicolor <- signif(cov(iris[iris$Species == "versicolor", 1:4]), digits = 3)
+cov_versicolor
+# virginica
+cov_virginica <- signif(cov(iris[iris$Species == "virginica", 1:4]), digits = 3)
+cov_virginica
+```
+
+## (b)
+
+```{r}
+# print means for each species
+# setosa
+sapply(iris[iris$Species == "setosa", 1:4], mean)
+# versicolor
+sapply(iris[iris$Species == "versicolor", 1:4], mean)
+# virginica
+sapply(iris[iris$Species == "virginica", 1:4], mean)
+```
+
+## (c)
+
+```{r}
+# pooled variance
+S <- ((50 - 1) * cov_virginica + (50 - 1) * cov_versicolor) / (50 + 50 - 2)
+S
+
+# compute T2 statistic
+HotellingsT2Test(iris[iris$Species == "versicolor", 1:4], iris[iris$Species == "virginica", 1:4])
+```
+
+The p-value is < 2.2e-16.
+
+## (d)
+
+```{r}
+# between groups SSCP matrix B
+means <- by(iris[, 1:4], iris$Species, colMeans)
+overall_mean <- colMeans(iris[, 1:4])
+B <- matrix(0, ncol = 4, nrow = 4)
+for (i in 1:3) {
+  B <- B + nrow(iris[iris$Species == names(means)[i],]) * 
+       (means[[i]] - overall_mean) %*% t(means[[i]] - overall_mean)
+}
+B
+
+# within groups (pooled) SSCP W
+W <- matrix(0, ncol = 4, nrow = 4)
+for (i in 1:3) {
+  subdata <- iris[iris$Species == names(means)[i], 1:4]
+  W <- W + (nrow(subdata) - 1) * var(subdata)
+}
+W
+
+# Wilks' lambda
+lambda <- det(W)/det(B+W)
+lambda
+
+# test statistic
+test_statistic <- - (150 - 1 - (4 + 3) / 2) * log(lambda)
+test_statistic
+
+# p value
+p_value <- pchisq(q = test_statistic, df = 4 * (3 - 1), lower.tail = F)
+p_value
+```
+
+## (e)
+
+```{r}
+# between groups SSCP matrix B
+means <- by(iris[, 3:4], iris$Species, colMeans)
+overall_mean <- colMeans(iris[, 3:4])
+B <- matrix(0, ncol = 2, nrow = 2)
+for (i in 1:3) {
+  B <- B + nrow(iris[iris$Species == names(means)[i],]) * 
+       (means[[i]] - overall_mean) %*% t(means[[i]] - overall_mean)
+}
+B
+
+# within groups (pooled) SSCP W
+W <- matrix(0, ncol = 2, nrow = 2)
+for (i in 1:3) {
+  subdata <- iris[iris$Species == names(means)[i], 3:4]
+  W <- W + (nrow(subdata) - 1) * var(subdata)
+}
+W
+
+# Wilks' lambda
+lambda <- det(W)/det(B+W)
+lambda
+
+# test statistic
+test_statistic <- - (150 - 1 - (2 + 3) / 2) * log(lambda)
+test_statistic
+
+# p value
+p_value <- pchisq(q = test_statistic, df = 2 * (3 - 1), lower.tail = F)
+p_value
+```

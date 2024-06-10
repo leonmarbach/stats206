@@ -1,0 +1,172 @@
+---
+title: "STATS 206 Pset 3"
+author: "Léon Marbach"
+date: "2023-10-24"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("/Users/lmarbach/Library/CloudStorage/GoogleDrive-lmarbach@stanford.edu/My Drive/Coursework/Year 2/Fall 2023/STATS 206/pset3")
+```
+
+# Problem 1
+
+```{r}
+# import datasets
+male <- read.csv("ANSUR_II_MALE_Public.csv")
+female <- read.csv("ANSUR_II_FEMALE_Public.csv")
+
+# keep first 93 variables, except subjectid (1st variable)
+male_subset <- male[, 2:94]
+female_subset <- female[, 2:94]
+
+# remove variable weightkg
+male_subset <- subset(male_subset, select = -c(weightkg))
+female_subset <- subset(female_subset, select = -c(weightkg))
+
+# PCA on correlation matrix
+pca_male <- prcomp(male_subset, scale.=T)
+pca_female <- prcomp(female_subset, scale.=T)
+
+# extract coefficients of the second PC loading
+coeff_table_male <- data.frame(variable = colnames(male_subset), 
+                               coefficient = pca_male$rotation[, 2])
+coeff_table_female <- data.frame(variable = colnames(female_subset), 
+                                 coefficient = pca_female$rotation[, 2])
+
+# Sort the table by the absolute values of the coefficients
+coeff_table_male <- coeff_table_male[order(abs(coeff_table_male$coefficient), 
+                                           decreasing = TRUE), ]
+coeff_table_female <- coeff_table_female[order(abs(coeff_table_female$coefficient), 
+                                               decreasing = TRUE), ]
+
+# Print the sorted coefficient tables
+print(coeff_table_male, row.names = FALSE)
+print(coeff_table_female, row.names = FALSE)
+
+# male: smallest 5 coeff of 2nd PC eigenvector
+# head(sort(pca_male$rotation[, 2]), 5)
+# male: largest 5 coeff of 2nd PC eigenvector
+# tail(sort(pca_male$rotation[, 2]), 5)
+# female: smallest 5 coeff of 2nd PC eigenvector
+# head(sort(pca_female$rotation[, 2]), 5)
+# female: largest 5 coeff of 2nd PC eigenvector
+# tail(sort(pca_female$rotation[, 2]), 5)
+```
+
+I am printing the full table of coefficients instead of just the top 5 or bottom 5 to see both the top and bottom in absolute value (values close to zero and values far from zero) - the code to print the largest and smallest 5 (no absolute value) still appears as comments.
+
+The second PC eigenvector represents the direction in the data that captures the most variance after accounting for the first PC. It is orthogonal to the first PC. Weights far from zero indicate that the variable strongly influences the component, while weights close to 0 indicate that the variable has a weak influence on the component. We can also look at weight signs to see whether a variable and a PC are positively or negatively correlated. 
+
+Interpretation is not obvious! For both male and female datasets, the largest positive coefficients represent how fat or big the belly/waist/chest of a person is ("waist circumference", "abdominal extension depth sitting", "waist depth", ...) while the largest negative coefficients look more at the height of the person ("popliteal height", "crotch height",  "waist height omphalion", ...), suggesting that taller people are more slim and shorter people are more fat (which is expected). The second PC thus captures this morphological pattern / variability in girth versus height of the person.
+
+# Problem 2
+
+```{r}
+# get scores on first three PC
+male_scores <- pca_male$x[, 1:3]
+female_scores <- pca_female$x[, 1:3]
+
+# fit linear regression model
+# male
+lm_male <- lm(male$Age ~ male_scores[, 1] + male_scores[, 2] + male_scores[, 3])
+summary(lm_male)
+# female
+lm_female <- lm(female$Age ~ female_scores[, 1] + female_scores[, 2] + female_scores[, 3])
+summary(lm_female)
+```
+
+# Problem 3
+
+```{r}
+# anova male branch / PC1
+aov_male_PC1 <- aov(male_scores[, 1] ~ male$Branch)
+summary(aov_male_PC1)
+
+# anova male branch / PC2
+aov_male_PC2 <- aov(male_scores[, 2] ~ male$Branch)
+summary(aov_male_PC2)
+
+# anova male branch / PC3
+aov_male_PC3 <- aov(male_scores[, 3] ~ male$Branch)
+summary(aov_male_PC3)
+
+# anova female branch / PC1
+aov_female_PC1 <- aov(female_scores[, 1] ~ female$Branch)
+summary(aov_female_PC1)
+
+# anova female branch / PC2
+aov_female_PC2 <- aov(female_scores[, 2] ~ female$Branch)
+summary(aov_female_PC2)
+
+# anova female branch / PC3
+aov_female_PC3 <- aov(female_scores[, 3] ~ female$Branch)
+summary(aov_female_PC3)
+```
+
+# Problem 4
+
+## (a)
+
+```{r}
+# import dataset
+sevens = as.matrix(read.table("sevens.txt"))
+
+# see what images look like
+image(matrix(sevens[1, ], 28, 28))
+image(matrix(sevens[1, ], 28, 28)[, 28:1])
+
+# compute principal components
+prcomp_sevens <- prcomp(sevens)
+
+# PC1
+image(matrix(prcomp_sevens$rotation[, 1], 28, 28)[,28:1])
+
+# PC2
+image(matrix(prcomp_sevens$rotation[, 2], 28, 28)[,28:1])
+
+# PC3
+image(matrix(prcomp_sevens$rotation[, 3], 28, 28)[,28:1])
+
+# PC4
+image(matrix(prcomp_sevens$rotation[, 4], 28, 28)[,28:1])
+
+# PC5
+image(matrix(prcomp_sevens$rotation[, 5], 28, 28)[,28:1])
+
+# PC6
+image(matrix(prcomp_sevens$rotation[, 6], 28, 28)[,28:1])
+
+# PC7
+image(matrix(prcomp_sevens$rotation[, 7], 28, 28)[,28:1])
+
+# PC8
+image(matrix(prcomp_sevens$rotation[, 8], 28, 28)[,28:1])
+
+# PC9
+image(matrix(prcomp_sevens$rotation[, 9], 28, 28)[,28:1])
+```
+
+## (b)
+
+```{r}
+# calculate proportion of variance explained by each principal component
+prop_var_explained <- prcomp_sevens$sdev^2 / sum(prcomp_sevens$sdev^2)
+
+# create cumulative proportion of variance explained vector
+cumulative_prop_var <- cumsum(prop_var_explained)
+
+# create plot to show proportion of variance explained by number of principal components
+plot(1:length(prop_var_explained), cumulative_prop_var, type = "b", 
+     xlab = "Number of Principal Components", ylab = "Proportion of Variance Explained",
+     main = "Proportion of Variance Explained by Principal Components")
+
+# find how many principal components needed to get 90% of the variance
+which(cumulative_prop_var >= 0.9)[1]
+```
+
+We need 66 PC to get 90% of the variance.

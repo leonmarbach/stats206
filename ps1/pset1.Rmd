@@ -1,0 +1,99 @@
+---
+title: "STATS 206 Pset 1"
+author: "Léon Marbach"
+date: "2023-10-03"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("/Users/lmarbach/Library/CloudStorage/GoogleDrive-lmarbach@stanford.edu/My Drive/Coursework/Year 2/Fall 2023/STATS 206/pset1")
+```
+
+# Problem 1: Food data
+
+## (a)
+
+```{r}
+# read data file
+food <- read.table("food.txt", header = TRUE)
+# abbreviate variables
+names(food) <- c("Fat", "Cal", "Carbs", "Protein", "Chol", "Weight", "SatFat")
+
+correlation_matrix <- cor(food) # calculate correlation matrix
+rounded_correlation_matrix <- round(correlation_matrix, 2) # round to two places
+print(rounded_correlation_matrix) # print rounded correlation matrix
+```
+
+## (b)
+
+```{r}
+pairs(food) # print scatterplot matrix
+print(food[which.max(food[["Chol"]]), ]) # find food with max cholesterol
+print(food[which.max(food[["Fat"]]), ]) # find food with max fat
+```
+
+We can see that one food has a very high level of cholesterol compared to others: it is cheesecake (*CHEESECAKE 1 CAKE*). Another example of an extreme food is carrot cake (*CARROT CAKE,CREMCHESE FRST,REC1 CAKE*), which has a very high level of fat compared to other foods.
+
+## (c)
+
+```{r}
+# divide each variable by Weight
+food$Fat <- food$Fat/food$Weight
+food$Cal <- food$Cal/food$Weight
+food$Carbs <- food$Carbs/food$Weight
+food$Protein <- food$Protein/food$Weight
+food$Chol <- food$Chol/food$Weight
+food$SatFat <- food$SatFat/food$Weight
+
+pairs(food[, names(food) != "Weight"]) # print scatterplot matrix
+
+print(food[which.max(food[["Chol"]]), ]) # find food with max cholesterol
+print(food[which.max(food[["Protein"]]), ]) # find food with max protein
+```
+Normalizing by Weight makes new foods stand out. For example, we now see a food with extremely high level of cholesterol but it is not cheesecake anymore but eggs (*EGGS, RAW, YOLK 1 YOLK*). Another example that now stands out is a food with a high level of protein compared to others: gelatin (*GELATIN, DRY 1 ENVELP*).
+
+# Problem 2: Mandibles
+
+## (a)
+
+```{r}
+mandibles <- read.table("mandibles.txt", header = TRUE) # read data file
+pairs(mandibles[, 3:11], pch=16) # print scatterplot matrix for X1 through X9
+pairs(mandibles[, 3:11], col=mandibles$Group, pch=16) # coloring by Species
+pairs(mandibles[, 3:11], col=1+mandibles$Sex, pch=16) # coloring by Sex
+```
+
+## (b)
+
+I see bigger grouping differences by Species.
+
+## (c)
+
+```{r}
+plot(1:5,1:5,col=1:5,pch=16)
+```
+
+We can see from R palette that:
+* Black dots represent 1 ("Modern")
+* Red dots represent group 2 ("Golden")
+* Green dots represent group 3 ("Cuon")
+* Dark blue dots represent 4 ("Wolf")
+* Cyan dots represent 5 ("Prehistoric")
+
+Knowing this and looking back at the pairs plot by Species we displayed in (a), we can clearly see that group 4 / "Wolf" (dark blue) has the biggest jaws and group 2 / "Golden" (red) has the smallest jaws.
+
+## (d)
+
+```{r}
+# Filter the dataset to include only rows where Species is "Wolf"
+wolf_data <- mandibles[mandibles$Species == "Wolf", ]
+# Find the row with the lowest value in the X6 variable
+min_row <- wolf_data[which.min(wolf_data$X6), ]
+# Print the observation with the lowest X6 value for Wolf
+print(min_row)
+```
+
+One dark blue point ("Wolf") looks like it is an outlier in the plot $X5$ ($length of 1st molar$) against $X6$ ($breath of 1st molar$), as it appears clearly outside the diagonal formed by other points. Subject number is 61.
